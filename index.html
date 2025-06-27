@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Video Trimmer</title>
+  <style>
+    body { background:#181818; color:white; font-family:sans-serif; text-align:center; }
+    video { width:80%; margin:20px auto; border:2px solid #555; }
+    input, button { margin:10px; padding:5px; }
+    button { cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>Video Trimmer</h1>
+  <form id="trimForm" enctype="multipart/form-data">
+    <input type="file" name="video" accept="video/*" required><br>
+    <label>Start (s): <input type="number" name="start" value="0"></label><br>
+    <label>End (s): <input type="number" name="end" value="10"></label><br>
+    <button type="submit">Trim</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('trimForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const res = await fetch('/trim', { method: 'POST', body: formData });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        document.getElementById('result').innerHTML = `
+          <h2>Trimmed Video:</h2>
+          <video controls src="${url}"></video>
+          <br><a href="${url}" download="trimmed.mp4">Download Trimmed Video</a>
+        `;
+      } else {
+        alert("Trimming failed");
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+</html>
